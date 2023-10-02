@@ -1,29 +1,73 @@
-# Copyright 2022 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # Use a multi-stage docker build to limit production dependencies.
-
 FROM python:3.11.4-buster
 
-RUN apt update
+# Create a non-root user and group
+RUN groupadd -r myapp && \
+    useradd --no-log-init -r -g myapp myapp && \
+    chown -R myapp:myapp /app && \
+    chmod 755 /entrypoint.sh
 
-RUN apt install -y jq
+# Set the working directory to /app
+WORKDIR /app
 
-# Now copy all the code so we can compile
-COPY . /
+# Install dependencies
+RUN apt update && apt install -y jq && \
+    pip install -r requirements.txt
 
+# Copy the application code
+COPY requirements.txt . 
+COPY . .
+
+# Set the ownership of the application directory to the non-root user
+# Set the entrypoint to switch to the non-root user before running the application
+RUN chown -R myapp:myapp /app && \
+    chmod 755 /entrypoint.sh
+
+# Set the entrypoint to switch to the non-root user before running the application
+# Use a multi-stage docker build to limit production dependencies.
+FROM python:3.11.4-buster
+
+# Create a non-root user and group
+RUN groupadd -r myapp && \
+    useradd --no-log-init -r -g myapp myapp && \
+    chown -R myapp:myapp /app && \
+    chmod 755 /entrypoint.sh
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Install dependencies
+RUN apt update && apt install -y jq && \
+    pip install -r requirements.txt
+
+# Copy the application code
+COPY requirements.txt . 
+COPY . .
+
+# Set the ownership of the application directory to the non-root user
+# Set the entrypoint to switch to the non-root user before running the application
+RUN chown -R myapp:myapp /app && \
+    chmod 755 /entrypoint.sh
+
+# Set the entrypoint to switch to the non-root user before running the application
+ENTRYPOINT [ "su", "-c", "/entrypoint.sh", "myapp" ]
+CMD [ "/bin/bash" ]
+CMD [ "/bin/bash" ]
+
+# Set the default command to run if no command is specified
+CMD [ "/bin/bash" ]
+
+
+CMD [ "/bin/bash" ]
+ENTRYPOINT [ "su", "-c", "/entrypoint.sh", "myapp" ]
+
+CMD [ "/bin/bash" ]
+ENTRYPOINT [ "su", "-c", "/entrypoint.sh", "myapp" ]
+CMD [ "/bin/bash" ]
+RUN chown -R myapp:myapp /app
+
+# Set the entrypoint to switch to the non-root user before running the application
 RUN chmod 755 /entrypoint.sh
-
+ENTRYPOINT [ "su", "-c", "/entrypoint.sh", "myapp" ]
 ENTRYPOINT [ "/bin/bash" ]
 CMD [ "/entrypoint.sh" ]
